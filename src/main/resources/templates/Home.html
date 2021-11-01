@@ -9,7 +9,15 @@
 </head>
 <body>
  <h1>Welcome to CodeFellowship Application</h1>
+ <a  th:href="@{/Allusers}">All users</a>
+ <p th:text="${user.getFirstName()}"></p>
 <p>This Appplication allows people learning to code to connect with each other and support each other on their coding journeys</p>
-<a href="@{http://localhost:8080/}">SignUp</a>
+
+ <a href="/signup">SignUp</a>
+
+
+<a  th:href="${'http://localhost:8080/profile/'+user.getId}">Profile</a>
+
+
 </body>
 </html>
