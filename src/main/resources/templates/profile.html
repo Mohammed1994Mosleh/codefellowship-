@@ -18,18 +18,23 @@
 
 
 </ul>
-<form action="/addpost" method="post">
+<form action="/post" method="post">
     <label for="post">Add Post</label>
     <input type="text" id="post" name="post">
+    <input type="submit">
 </form>
 
-<div th:each="">
-    <p></p>
+
+
+< <div class="objectTow" th:each="onepost:${profile.allposts}">
+    <h2 th:text="${onepost.id}"></h2>
+    <h2 th:text="${onepost.body}"></h2>
+    <h2 th:text="${onepost.createdAt}"></h2>
 </div>
 
 
 
-<input th:href="/perform_logout" value="Logout">
+<!--<input th:href="/perform_logout" value="Logout">-->
 
 </body>
 </html>

@@ -2,26 +2,19 @@ package com.example.CodeFellowship.Models;
 
 
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.ManyToOne;
-import java.time.Instant;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Post extends AuditableBase {
+public class Post  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @CreatedBy
-    private ApplicationUser user;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime createdAt ;
 
     private String body;
 
@@ -33,9 +26,41 @@ public class Post extends AuditableBase {
 
     }
 
-    public Post(ApplicationUser user,String body,LocalDateTime createdAt){
-        this.user=user;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public ApplicationUser getAppUser() {
+        return appUser;
+    }
+
+    public void setAppUser(ApplicationUser appUser) {
+        this.appUser = appUser;
+    }
+
+    public Post(String body, ApplicationUser user){
+        this.appUser=user;
         this.body=body;
-        this.createdAt=createdAt;
+        this.createdAt = LocalDateTime.now();
     }
 }

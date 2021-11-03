@@ -4,8 +4,10 @@ import com.example.CodeFellowship.Models.ApplicationUser;
 import com.example.CodeFellowship.Models.Post;
 import com.example.CodeFellowship.Repo.AppUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +49,7 @@ public class AppUserController {
     @GetMapping("profile/{id}")
     public String profile(@PathVariable Integer id,Model model){
         ApplicationUser loginUser=appUserRepo.findByid(id);
-        model.addAttribute("user",loginUser);
+        model.addAttribute("profile",loginUser);
         return "profile";
     }
 
@@ -71,7 +73,9 @@ public class AppUserController {
 
         ApplicationUser newUser=new ApplicationUser(username, encoder.encode(password), firstName,lastName,dateOfBirth, bio);
         appUserRepo.save(newUser);
-        return new RedirectView("/login");
+        Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, new ArrayList<>());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return new RedirectView("/profile");
 
     }
 
