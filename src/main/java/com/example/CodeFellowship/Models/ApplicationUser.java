@@ -7,6 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Date;
+
+import java.util.List;
+
 @Entity
 public class ApplicationUser implements UserDetails {
 
@@ -21,6 +24,8 @@ public class ApplicationUser implements UserDetails {
     private String lastName;
     private String dateOfBirth;
     private String bio;
+    @OneToMany(mappedBy = "appUser")
+    List<Post> allposts;
 
 
     public ApplicationUser(){
@@ -61,6 +66,13 @@ public class ApplicationUser implements UserDetails {
 
     public String getBio() {
         return bio;
+    }
+
+    public List<Post> getAllposts() {
+        return allposts;
+    }
+    public void setAllposts(List<Post> allposts) {
+        this.allposts = allposts;
     }
 
     //override methods
