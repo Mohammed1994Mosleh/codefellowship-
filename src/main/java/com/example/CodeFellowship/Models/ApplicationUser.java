@@ -5,10 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Date;
-
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class ApplicationUser implements UserDetails {
@@ -26,6 +23,14 @@ public class ApplicationUser implements UserDetails {
     private String bio;
     @OneToMany(mappedBy = "appUser")
     List<Post> allposts;
+
+    @ManyToMany (cascade = {CascadeType.ALL})
+    @JoinTable(name = "following_follower" , joinColumns = {@JoinColumn(name = "following_id")} , inverseJoinColumns = {@JoinColumn(name = "follower_id")})
+    private Set<ApplicationUser> following = new HashSet<>();
+
+    @ManyToMany (cascade = {CascadeType.ALL})
+    @JoinTable(name = "following_follower" , joinColumns = {@JoinColumn(name = "follower_id")} , inverseJoinColumns = {@JoinColumn(name = "following_id")})
+    private List<ApplicationUser> myFollowers = new ArrayList<>();
 
 
     public ApplicationUser(){
@@ -91,6 +96,11 @@ public class ApplicationUser implements UserDetails {
         return username;
     }
 
+
+    public List<ApplicationUser> getFoollwer(){
+        return myFollowers;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -110,6 +120,19 @@ public class ApplicationUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public Set<ApplicationUser> getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(ApplicationUser newFollowing) {
+        this.following.add(newFollowing);
+    }
+
+    public List<ApplicationUser> getMyFollowers() {
+        return myFollowers;
+    }
+
 }
 
 

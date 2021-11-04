@@ -3,6 +3,8 @@ package com.example.CodeFellowship.Controller;
 import com.example.CodeFellowship.Models.ApplicationUser;
 import com.example.CodeFellowship.Models.Post;
 import com.example.CodeFellowship.Repo.AppUserRepo;
+import com.example.CodeFellowship.Repo.PostRepo;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,12 +24,16 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class AppUserController {
 
     @Autowired
     PasswordEncoder encoder;
+
+    @Autowired
+    PostRepo postRepo;
 
     @Autowired
     AppUserRepo appUserRepo;
@@ -44,6 +50,22 @@ public class AppUserController {
 
            model.addAttribute("user",user);
 
+        List<Post> postList = (List<Post>) postRepo.findAll();
+
+        if (user != null) {
+            ApplicationUser currentUser = appUserRepo.findByUsername(user.getUsername());
+            model.addAttribute("username", currentUser.getUsername());
+
+            List<Post> myFollowingPost = new ArrayList();
+            for (Post post : postList) {
+                if (!currentUser.getFollowing().contains(post.getAppUser()) && post.getAppUser() != currentUser)  myFollowingPost.add(post);
+            }
+            model.addAttribute("postList", myFollowingPost);
+        }
+
+
+
+
     return "Home.html";
     }
     @GetMapping("profile/{id}")
@@ -53,6 +75,30 @@ public class AppUserController {
         return "profile";
     }
 
+    @PostMapping("/follow")
+    public RedirectView printHi(@RequestParam Integer id, @AuthenticationPrincipal ApplicationUser user, Model model) {
+        ApplicationUser currentUser = appUserRepo.findByUsername(user.getUsername());
+        ApplicationUser newFollowing = appUserRepo.findById(id).get();
+        currentUser.setFollowing(newFollowing);
+        appUserRepo.save(currentUser);
+        return new RedirectView("/");
+    }
+
+
+    @GetMapping("/feed")
+    public String feel(@AuthenticationPrincipal ApplicationUser user , Model model) {
+        if (user != null){
+            Set<ApplicationUser> myFollowing = appUserRepo.findByUsername(user.getUsername()).getFollowing();
+            List<Post> postList = new ArrayList();
+            for (ApplicationUser currentFollower : myFollowing) {
+                postList.addAll(currentFollower.getAllposts());
+            }
+            model.addAttribute("postList", postList);
+        }
+        return "feed.html";
+    }
+
+
     @GetMapping("/Allusers")
     public String allUsers(Model model){
         ArrayList <ApplicationUser> allUsers=(ArrayList<ApplicationUser>) appUserRepo.findAll();
@@ -60,6 +106,14 @@ public class AppUserController {
         return "Allusers";
     }
 
+    @GetMapping("/showfollower")
+public String showFollowers(Principal p,Model model){
+        ApplicationUser appUser=appUserRepo.findByUsername(p.getName());
+        model.addAttribute("users",appUser);
+//       appUser.getMyFollowers()
+
+      return "follwer";
+    }
 
 
     @GetMapping("/signup")
